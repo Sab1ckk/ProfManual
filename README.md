@@ -22,11 +22,11 @@ pip install fastapi[all] sqlalchemy pyodbc
 Так же можно воткнуть pandas и openpyxl
 ### Для веба надо следующее
 Чтобы верстать быстро, нужен бутстрап качаем его 
-- [с этого репозитория](\content\bootstrap-5.3.0-dist)
+- [с этого репозитория](content/bootstrap-5.3.0-dist)
 - [или с сайта](https://getbootstrap.ru/docs/5.3/getting-started/download/)
 
 Для меню календаря нужен будет Full Calendar
-- [с репозитория](\content\dist)
+- [с репозитория](content/dist)
 - [с сайта](https://fullcalendar.io/docs/initialize-globals)
 
 ## **Сессия 1**
