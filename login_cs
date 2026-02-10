@@ -1,0 +1,55 @@
+public partial class Login : Window
+{
+    public string _user;
+    public Login()
+    {
+        InitializeComponent();
+        this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+    }
+       
+    private string Hash(string password)
+    {
+        using (SHA256 hasher = SHA256.Create())
+        {
+            byte[] bytes = hasher.ComputeHash(Encoding.UTF8.GetBytes(password));
+            
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                sb.Append(bytes[i].ToString("x2"));
+            }
+            return sb.ToString();
+        }
+
+    }
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        if(TryLogin())
+        {
+            this.DialogResult = true;
+        }
+        else { MessageBox.Show("Не верный логин или пароль"); }
+    }
+
+    private bool TryLogin()
+    {
+        try
+        {
+            using (var context = new VendSysEntities())
+            {
+                string curUsName = Log.Text.Trim();
+                string password = Hash(Pas.Text.Trim().ToLower());
+                     
+                var userName = context.user_self_info.Where(v => v.last_name.ToLower() == curUsName.ToLower()).FirstOrDefault();
+                if (userName != null)
+                {
+                    var trueUser = context.users.Where(u => u.user_password == password);
+                    if (trueUser != null) { _user = userName.last_name; return true; }
+                    else { return false; }
+                }
+                else { return false; }
+            }
+        }
+        catch (Exception ex) { MessageBox.Show(ex.Message); return false; }
+    }
+}
