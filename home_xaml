@@ -1,0 +1,156 @@
+<Page x:Class="DesckTop1.Home"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DesckTop1"
+      xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+      mc:Ignorable="d" 
+      d:DesignHeight="630" d:DesignWidth="1020"
+      Title="Home">
+    <Page.Resources>
+        <Style x:Key="CardStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Bahnschrift" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Margin" Value="10,8" />
+        </Style>
+        <Style x:Key="CardBordStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+    </Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="330*"/>
+            <ColumnDefinition Width="330*"/>
+            <ColumnDefinition Width="340*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70*"/>
+            <RowDefinition Height="260*"/>
+            <RowDefinition Height="300*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Личный кабинет. Главная" FontSize="28" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                   FontWeight="Bold" Margin="15,10" FontFamily="Bahnschrift"/>
+
+        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource CardBordStyle}">
+            <Grid Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Background="#FFB1B1B1">
+                    <TextBlock Text="Эффективность сети" Style="{StaticResource CardStyle}"/>
+                </Border>
+                <Border Grid.Row="1" Grid.RowSpan="2" >
+                    <lvc:AngularGauge x:Name="NetworkGauge"
+                        Value="56" 
+                        LabelsStep="100"
+                        TicksStep="25"
+                        Wedge="140"
+                        TicksForeground="Transparent"
+                        Foreground="Transparent"
+                        SectionsInnerRadius="0.5" Margin="0,30,0,-91">
+                        <lvc:AngularGauge.Sections>
+                            <lvc:AngularSection FromValue="0" ToValue="100" Fill="#00E640"/>
+                        </lvc:AngularGauge.Sections>
+                    </lvc:AngularGauge>
+                </Border>
+                <TextBlock Grid.Row="2" x:Name="NetEffic" Text="Работающих автоматов - 100%" FontFamily="Bahnschrift" Margin="10" FontSize="12" HorizontalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource CardBordStyle}">
+            <Grid Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Background="#FFB1B1B1">
+                    <TextBlock Text="Состояние сети" Style="{StaticResource CardStyle}"/>
+                </Border>
+                <Border Grid.Row="1">
+                    <lvc:PieChart x:Name="NetStat" InnerRadius="45" StartingRotationAngle="180" Margin="15"/>
+                </Border>
+                <TextBlock Grid.Row="1" x:Name="NetStatLb" Text="Под вопросом 9" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10"></TextBlock>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource CardBordStyle}">
+            <Grid Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Background="#FFB1B1B1">
+                    <TextBlock Text="Сводка сети" Style="{StaticResource CardStyle}"/>
+                </Border>
+                <UniformGrid Grid.Row="1" Columns="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                    <StackPanel Margin="10">
+                        <TextBlock Text="Денег в ТА"/>
+                        <TextBlock Text="Сдача в ТА"/>
+                        <TextBlock Text="Выручка сегодня"/>
+                        <TextBlock Text="Выручка вчера"/>
+                        <TextBlock Text="Инкасировано вчера"/>
+                        <TextBlock Text="Инкасировано вчера"/>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Right" Margin="10">
+                        <TextBlock Text="Денег в ТА"/>
+                        <TextBlock Text="Сдача в ТА"/>
+                        <TextBlock Text="Выручка сегодня"/>
+                        <TextBlock Text="Выручка вчера"/>
+                        <TextBlock Text="Инкасировано вчера"/>
+                        <TextBlock Text="Инкасировано вчера"/>
+                    </StackPanel>
+                </UniformGrid>
+            </Grid>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource CardBordStyle}">
+            <Grid Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Background="#FFB1B1B1">
+                    <StackPanel>
+                        <TextBlock Text="Динамика продаж за 10 дней" Style="{StaticResource CardStyle}" Margin="10,10,0,0"/>
+                        <TextBlock Text="Данные по продажам с" Margin="10,0,0,0"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Click="Sum_Click" Content="По сумме" Margin="10,5,0,5" Padding="10,4"/>
+                            <Button Click="Quant_Click" Content="По количеству" Margin="10,5,0,5" Padding="10,4"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="1">
+                    <lvc:CartesianChart x:Name="SalesChart">
+                        <lvc:CartesianChart.Series>
+                            <lvc:ColumnSeries
+                                x:Name="ColumnSer"
+                                Fill="#D1EAF9"
+                                />
+                        </lvc:CartesianChart.Series>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis x:Name="LabelsX" LabelsRotation="0">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Step="1" StrokeThickness="0"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
+                    </lvc:CartesianChart>
+                </Border>
+            </Grid>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource CardBordStyle}">
+            <Grid Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Background="#FFB1B1B1">
+                    <TextBlock Text="Новости" Style="{StaticResource CardStyle}"/>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
