@@ -45,3 +45,10 @@ from openrowset (bulk 'путь к файлу', SINGLE_NCLOB, CODEPAGE='65001') 
 > a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3
 #### Дальше импорт из .csv
 Тут будет 100% ошибка кодировок, поэтому чтобы ее исправить нужно создать Excel документ, импотировать в него нужный CSV через вкладку "данные", а затем сохранить в новый CSV с кодировкой UTF-8
+## Сесия 2
+**Подключение Live Charts в xaml**  
+В верхних строчках пишем:
+```
+xmlns:local="clr-namespace:WPFSample"
+xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF">
+```
