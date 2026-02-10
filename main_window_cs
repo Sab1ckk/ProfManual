@@ -1,0 +1,86 @@
+public partial class MainWindow : Window
+{
+    private string _userName;
+    public MainWindow()
+    {
+        InitializeComponent();
+        this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        MainFrame.Navigate(new Home());
+    }
+
+    private void WindowLoaded(object sender, RoutedEventArgs e)
+    {
+        Login();
+    }
+
+    private void Login()
+    {
+        Login login = new Login();
+
+        if (login.ShowDialog() == true)
+        {
+            _userName = login._user;
+            login.Close();
+            LabelInfo.Text = "Главная";
+            LoadUser();
+        }
+        else
+        {
+            Application.Current.Shutdown();
+        }
+    }
+    private void LoadUser()
+    {
+        try
+        {
+            using (var context = new VendSysEntities())
+            {
+                var usInfo = context.user_self_info.Where(u => u.last_name == _userName).FirstOrDefault();
+                var userRole = context.users.Where(u => u.user_id == usInfo.user_id).FirstOrDefault();
+
+                var last = usInfo.last_name;
+                var midlle = usInfo.midlle_name.Substring(0, 1);
+                var first = usInfo.first_name.Substring(0, 1);
+
+                UserName.Text = $"{last} {first}.{midlle}.";
+
+                if(userRole.role_name == "Франчайзи")
+                {
+                    UserRole.Text = "Администратор";
+                }
+                else { UserRole.Text = "Персонал"; }
+            }
+        }
+        catch (Exception ex) { MessageBox.Show(ex.Message); }
+    }
+    private void UserProfileBtn_Click(object sender, RoutedEventArgs e)
+    {
+        ProfileMenu.PlacementTarget = UserProfileBtn;
+        ProfileMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+        ProfileMenu.IsOpen = true;
+    }
+
+    private void Exit_Click(object sender, RoutedEventArgs e)
+    {
+        UserName.Text = "Автоматов А.А.";
+        UserRole.Text = "Администратор";
+        Login();
+    }
+    private void Home_Click(object sender, RoutedEventArgs e)
+    {
+        MainFrame.Navigate(new Home());
+        LabelInfo.Text = "Главная";
+    }
+
+    private void TA_Click(object sender, RoutedEventArgs e)
+    {
+        MainFrame.Navigate(new Home());
+        LabelInfo.Text = "Главная/Торговые автоматы";
+    }
+
+    private void Monitor_Click(object sender, RoutedEventArgs e)
+    {
+        MainFrame.Navigate(new Monitor());
+        LabelInfo.Text = "Главная/Иониторинг ТА";
+    }
+}
