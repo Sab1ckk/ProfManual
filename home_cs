@@ -1,0 +1,140 @@
+using LiveCharts;
+using LiveCharts.Wpf;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace DesckTop1
+{
+    /// <summary>
+    /// Логика взаимодействия для Home.xaml
+    /// </summary>
+    public partial class Home : Page
+    {   
+        VendSysEntities _db = new VendSysEntities();
+        public Home()
+        {
+            InitializeComponent();
+            CalckNetEf(); CalckNetStat();
+            SumFilter();
+        }
+
+        private void CalckNetEf()
+        {
+            try
+            {
+                double all_mach = _db.vending_machines.Count();
+                double work_mach = _db.vending_machines.Where(v => v.status == "Работает").Count();
+                double pers = work_mach / all_mach * 100;
+
+                NetworkGauge.Value = pers;
+                NetEffic.Text = $"Работающих автоматов: {pers}%";
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void CalckNetStat()
+        {
+            try
+            {
+                SeriesCollection series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Name = "Обслуживается",
+                        Values = new ChartValues<double>{ _db.vending_machines.Where(v => v.status == "Обслуживается").Count() },
+                        Fill = new SolidColorBrush(Colors.Blue),
+                    },
+                    new PieSeries
+                    {
+                        Name = "Сломан",
+                        Values = new ChartValues<double>{ _db.vending_machines.Where(v => v.status == "Сломан").Count() },
+                        Fill = new SolidColorBrush(Colors.Red),
+                    },
+                    new PieSeries
+                    {
+                        Name = "Работает",
+                        Values = new ChartValues<double>{ _db.vending_machines.Where(v => v.status == "Работает").Count() },
+                        Fill = new SolidColorBrush(Colors.Green),
+                    }
+                };
+
+               
+                NetStat.Series = series;
+                NetStatLb.Text = $"Под вопросом {_db.vending_machines.Where(v => v.status == null).Count()}";
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        public class SalesResult
+        {
+           public decimal Price {  get; set; }
+            public int Quant {  get; set; }
+            public DateTime Date { get; set; }
+        }
+        private void SumFilter()
+        {
+            try
+            {
+                var val = _db.Database.SqlQuery<SalesResult>(
+                    "select top 10 SUM(total_price) as Price, sale_date as Date from sales group by sale_date order by sale_date desc"
+                    ).ToArray();
+
+                List<string> dates = new List<string>();
+                var values = new ChartValues<double>();
+
+                foreach ( var v in val )
+                {
+                    dates.Add($"{v.Date:ddd}\n{v.Date:d}");
+                    values.Add((double)v.Price);
+                }
+
+                ColumnSer.Values = values;
+                LabelsX.Labels = dates;
+                //SalesChart.AxisX.Add(new Axis { Labels = dates.ToArray() });
+            }
+            catch(Exception ex) { MessageBox.Show(ex.Message); }
+
+        }
+
+        private void Sum_Click(object sender, RoutedEventArgs e)
+        {
+            SumFilter();
+        }
+
+        private void Quant_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var val = _db.Database.SqlQuery<SalesResult>(
+                    "select top 10 SUM(quantity) as Quant, sale_date as Date from sales group by sale_date order by sale_date desc"
+                    ).ToArray();
+
+                List<string> dates = new List<string>();
+                var values = new ChartValues<double>();
+
+                foreach (var v in val)
+                {
+                    dates.Add($"{v.Date:ddd}\n{v.Date:d}");
+                    values.Add(v.Quant);
+                }
+
+                ColumnSer.Values = values;
+                LabelsX.Labels = dates;
+                //SalesChart.AxisX.Add(new Axis { Labels = dates.ToArray() });
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+    }
+}
