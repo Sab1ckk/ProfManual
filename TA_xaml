@@ -1,0 +1,92 @@
+<Page x:Class="DesktopApp2.VendMach"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DesktopApp2"
+      mc:Ignorable="d" 
+      d:DesignHeight="605" d:DesignWidth="1020"
+      Title="MonitorPage">
+    <Page.Resources>
+        <Style x:Key="Text">
+            <Setter Property="Control.FontFamily" Value="Bahnschrift"/>
+            <Setter Property="Control.FontSize" Value="20"/>
+            <Setter Property="Control.Foreground" Value="#FF248FF3"/>
+        </Style>
+    </Page.Resources>
+    <Grid>
+        <Border Margin="80, 10" Background="White" BorderBrush="#FF248FF3">
+            <Grid Margin="20,10" Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal" Margin="2,10">
+                    <TextBlock Text="Торговые автоматы: " Style="{StaticResource Text}" />
+                    <TextBlock x:Name="MachCount" Text="" Style="{StaticResource Text}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Показать " VerticalAlignment="Center"/>
+                    <ComboBox x:Name="PageSizeCombo" Width="60" SelectionChanged="PageSize_Changed">
+                        <ComboBoxItem Content="10" IsSelected="True"/>
+                        <ComboBoxItem Content="50"/>
+                        <ComboBoxItem Content="100"/>
+                    </ComboBox>
+                    <TextBlock Text="  записей" VerticalAlignment="Center"/>
+                    <TextBox x:Name="SearchBox" Width="200" Margin="20,0" 
+                    TextChanged="SearchBox_TextChanged" Tag="Фильтр"/>
+                    <Button Content="Добавить" Margin="10,0"/>
+                    <Button Content="Экспорт" Click="Export_Click" Margin="10,0"/>
+                    <Button x:Name="ViewModeBtn" Content="Режим: Плитка" Click="ToggleView_Click"/>
+                </StackPanel>
+
+                <DataGrid x:Name="MachinesGrid" Grid.Row="2" AutoGenerateColumns="False" 
+                    IsReadOnly="True" AlternatingRowBackground="#F2F2F2" AlternationCount="2">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding machine_id}"/>
+                        <DataGridTextColumn Header="Название" Binding="{Binding machine_name}"/>
+                        <DataGridTextColumn Header="Модель" Binding="{Binding modelName}"/>
+                        <DataGridTextColumn Header="Компания" Binding="{Binding company}"/>
+                        <DataGridTextColumn Header="Модем" Binding="{Binding operator}"/>
+                        <DataGridTextColumn Header="Адрес/Место" Binding="{Binding addRess}"/>
+                        <DataGridTextColumn Header="В работе с" Binding="{Binding inWork}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <ScrollViewer x:Name="TileView" Grid.Row="2" Visibility="Collapsed">
+                    <ItemsControl x:Name="TilesControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Width="200" Height="Auto">
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding machine_name}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding modelName}"/>
+                                        <TextBlock Text="{Binding company}" FontSize="10" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding operator}" FontSize="10" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding addRess}" FontSize="10" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
+                    <TextBlock x:Name="StatusText" Text="Записи с 1 до 9 из 9" Margin="0,0,20,0" VerticalAlignment="Center"/>
+                    <Button Content="Назад" Click="PrevPage_Click"/>
+                    <TextBlock x:Name="CurrentPageText" Text="1" Margin="10,0" VerticalAlignment="Center"/>
+                    <Button Content="Вперед" Click="NextPage_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
