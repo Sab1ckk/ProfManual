@@ -1,0 +1,134 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace DesktopApp2
+{
+    /// <summary>
+    /// Логика взаимодействия для VendMach.xaml
+    /// </summary>
+    public partial class VendMach : Page
+    {
+        private VendingSystem _db = new VendingSystem();
+        private int _currentPage = 1;
+        private int _pageSize = 10;
+        private int _currentPageLenght;
+        private int _currentEnd;
+        public VendMach()
+        {
+            InitializeComponent();
+            LoadData();
+        }
+
+        private void LoadData()
+        {
+            try
+            {
+                var query = from vm in _db.vending_machines
+                            join m in _db.models on vm.model_id equals m.model_id
+                            join l in _db.locations on vm.location_id equals l.location_id
+                            join md in _db.machine_related_dates on vm.related_dates_id equals md.dates_id
+                            select new
+                            {
+                                vm.machine_id,
+                                vm.machine_name,
+                                modelName = m.model_name,
+                                m.company,
+                                vm.@operator,
+                                addRess = l.address + ", " + l.place,
+                                inWork = md.comission_date.ToString()
+                            };
+
+
+                // 2. Фильтрация
+                if (!string.IsNullOrWhiteSpace(SearchBox.Text))
+                {
+                    query = query.Where(x => x.machine_name.Contains(SearchBox.Text));
+                }
+
+                int totalItems = query.Count();
+
+                _pageSize = int.Parse(((ComboBoxItem)PageSizeCombo.SelectedItem).Content.ToString());
+
+                // 3. Пагинация 
+                var result = query.OrderBy(x => x.machine_id)
+                                  .Skip((_currentPage - 1) * _pageSize)
+                                  .Take(_pageSize)
+                                  .ToList();
+
+                MachinesGrid.ItemsSource = result;
+                TilesControl.ItemsSource = result;
+
+                // 4. Обновление счетчика
+                int start = (_currentPage - 1) * _pageSize;
+
+                int end = start + _pageSize + 1;
+
+                StatusText.Text = $"Записи с {start + 1} до {end} из {totalItems}";
+
+                _currentEnd = end-1;
+                _currentPageLenght = totalItems;
+                MachCount.Text = $"{totalItems} шт.";
+            }
+            catch (Exception ex) { }
+            
+        }
+
+        // События
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e) { _currentPage = 1; LoadData(); }
+        private void PageSize_Changed(object sender, SelectionChangedEventArgs e) { _currentPage = 1; LoadData(); }
+        private void NextPage_Click(object sender, RoutedEventArgs e) { if (_currentEnd < _currentPageLenght) _currentPage++; LoadData(); }
+        private void PrevPage_Click(object sender, RoutedEventArgs e) { if (_currentPage > 1) _currentPage--; LoadData(); }
+
+        private void Export_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                // Заголовки (опционально)
+                sb.AppendLine("ID;Название;Модель;Модем;Адрес;Дата");
+
+                foreach (var item in MachinesGrid.Items)
+                {
+                    // Используем dynamic, так как у нас анонимный тип из EF
+                    dynamic row = item;
+                    sb.AppendLine($"{row.machine_id};{row.machine_name};{row.modelName};{row.company};{row.@operator};{row.addRess};{row.inWork}");
+                }
+
+                File.WriteAllText("C:\\Users\\timei\\OneDrive\\Рабочий стол\\test.csv", sb.ToString(), Encoding.UTF8);
+            }
+            catch(Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        // Переключение режима (Таблица/Плитка)
+        private void ToggleView_Click(object sender, RoutedEventArgs e)
+        {
+            if (MachinesGrid.Visibility == Visibility.Visible)
+            {
+                MachinesGrid.Visibility = Visibility.Collapsed;
+                TileView.Visibility = Visibility.Visible;
+                ViewModeBtn.Content = "Режим: Таблица";
+            }
+            else
+            {
+                MachinesGrid.Visibility = Visibility.Visible;
+                TileView.Visibility = Visibility.Collapsed;
+                ViewModeBtn.Content = "Режим: Плитка";
+            }
+        }
+    }
+}
